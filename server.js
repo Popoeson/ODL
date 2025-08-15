@@ -80,17 +80,22 @@ app.get('/api/departments', async (req, res) => {
     }
 });
 
-// --- Get a single department by ID ---
-app.get('/api/departments/:id', async (req, res) => {
+// --- Get departments (optionally filtered by faculty) ---
+app.get('/api/departments', async (req, res) => {
     try {
-        const dept = await Department.findById(req.params.id);
-        if (!dept) return res.status(404).json({ message: '❌ Department not found' });
-        res.json(dept);
+        const { faculty } = req.query; // e.g. /api/departments?faculty=Allied%20Health%20Sciences
+
+        let query = {};
+        if (faculty) {
+            query.faculty = faculty;
+        }
+
+        const departments = await Department.find(query);
+        res.json(departments);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
-
 // --- Update a department ---
 app.put('/api/departments/:id', async (req, res) => {
     try {
