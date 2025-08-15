@@ -100,6 +100,19 @@
     button:hover {
       background-color: #096e3b;
     }
+    .spinner {
+      display:none;
+      width:20px;
+      height:20px;
+      border:3px solid rgba(0,0,0,0.2);
+      border-top:3px solid #fff;
+      border-radius:50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+     0% { transform: rotate(0deg); }
+     100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -163,70 +176,118 @@
       </select>
 
       <button type="submit">Save Department</button>
+      <div class="spinner"></div>
     </form>
   </div>
 
   <script>
-      
-      let courses = [];
+  let courses = [];
 
-    function addCourse() {
-      const course = { name: '', year: '', semester: '', unit: '' };
-      courses.push(course);
-      displayCourses();
-    }
+  function addCourse() {
+    const course = { name: '', year: '', semester: '', unit: '' };
+    courses.push(course);
+    displayCourses();
+  }
 
-    function updateCourse(index, field, value) {
-      courses[index][field] = value;
-    }
+  function updateCourse(index, field, value) {
+    courses[index][field] = value;
+  }
 
-    function deleteCourse(index) {
-      courses.splice(index, 1);
-      displayCourses();
-    }
+  function deleteCourse(index) {
+    courses.splice(index, 1);
+    displayCourses();
+  }
 
-    function displayCourses() {
-      const coursesList = document.getElementById('coursesList');
-      coursesList.innerHTML = '';
-      courses.forEach((course, index) => {
-        const row = document.createElement('div');
-        row.className = 'course-row';
-        row.innerHTML = `
-          <input type="text" placeholder="Course Name" value="${course.name}" 
-            oninput="updateCourse(${index}, 'name', this.value)">
-          <select onchange="updateCourse(${index}, 'year', this.value)">
-            <option value="">Year</option>
-            <option value="Year 1" ${course.year==='Year 1'?'selected':''}>Year 1</option>
-            <option value="Year 2" ${course.year==='Year 2'?'selected':''}>Year 2</option>
-            <option value="Year 3" ${course.year==='Year 3'?'selected':''}>Year 3</option>
-            <option value="Year 4" ${course.year==='Year 4'?'selected':''}>Year 4</option>
-          </select>
-          <select onchange="updateCourse(${index}, 'semester', this.value)">
-            <option value="">Semester</option>
-            <option value="First Semester" ${course.semester==='First Semester'?'selected':''}>First Semester</option>
-            <option value="Second Semester" ${course.semester==='Second Semester'?'selected':''}>Second Semester</option>
-          </select>
-          <input type="number" placeholder="Units" value="${course.unit}" 
-            oninput="updateCourse(${index}, 'unit', this.value)">
-          <button type="button" class="delete-btn" onclick="deleteCourse(${index})">X</button>
-        `;
-        coursesList.appendChild(row);
-      });
-    }
-
-    document.getElementById('deptForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      formData.append('courses', JSON.stringify(courses));
-
-      const data = {};
-      formData.forEach((value, key) => data[key] = value);
-
-      console.log("Department Data:", data);
-      alert("Department info saved successfully! (Frontend only for now)");
+  function displayCourses() {
+    const coursesList = document.getElementById('coursesList');
+    coursesList.innerHTML = '';
+    courses.forEach((course, index) => {
+      const row = document.createElement('div');
+      row.className = 'course-row';
+      row.innerHTML = `
+        <input type="text" placeholder="Course Name" value="${course.name}" 
+          oninput="updateCourse(${index}, 'name', this.value)">
+        <select onchange="updateCourse(${index}, 'year', this.value)">
+          <option value="">Year</option>
+          <option value="Year 1" ${course.year==='Year 1'?'selected':''}>Year 1</option>
+          <option value="Year 2" ${course.year==='Year 2'?'selected':''}>Year 2</option>
+          <option value="Year 3" ${course.year==='Year 3'?'selected':''}>Year 3</option>
+          <option value="Year 4" ${course.year==='Year 4'?'selected':''}>Year 4</option>
+        </select>
+        <select onchange="updateCourse(${index}, 'semester', this.value)">
+          <option value="">Semester</option>
+          <option value="First Semester" ${course.semester==='First Semester'?'selected':''}>First Semester</option>
+          <option value="Second Semester" ${course.semester==='Second Semester'?'selected':''}>Second Semester</option>
+        </select>
+        <input type="number" placeholder="Units" value="${course.unit}" 
+          oninput="updateCourse(${index}, 'unit', this.value)">
+        <button type="button" class="delete-btn" onclick="deleteCourse(${index})">X</button>
+      `;
+      coursesList.appendChild(row);
     });
-    
+  }
 
+  document.getElementById('departmentForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const spinner = document.getElementById('spinner');
+
+    // Disable button & show spinner
+    submitBtn.disabled = true;
+    spinner.style.display = 'inline-block';
+
+    const formData = new FormData(this);
+
+    const payload = {
+      faculty: formData.get('faculty'),
+      department: formData.get('department'),
+      description: formData.get('description'),
+      hod: formData.get('hod'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      duration: formData.get('duration'),
+      courses: courses.map(c => ({
+        name: c.name,
+        year: c.year,
+        semester: c.semester,
+        unit: Number(c.unit)
+      })),
+      admissionRequirements: {
+        olevelSubjects: formData.get('olevelSubjects').split(',').map(s => s.trim()),
+        jambScore: Number(formData.get('jambScore')),
+        jambCombination: formData.get('jambCombination').split(',').map(s => s.trim()),
+        extraOlevel: formData.get('extraOlevel')
+      },
+      accreditation: formData.get('accreditation')
+    };
+
+    try {
+      const res = await fetch('https://odl-450c.onrender.com/api/departments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.message || '✅ Department saved successfully!');
+        this.reset();
+        courses = [];
+        displayCourses();
+      } else {
+        alert(`❌ Error: ${data.error || 'Something went wrong'}`);
+      }
+    } catch (err) {
+      alert(`⚠️ Network error: ${err.message}`);
+    }
+
+    // Enable button & hide spinner
+    submitBtn.disabled = false;
+    spinner.style.display = 'none';
+  });
   </script>
 </body>
 </html>
+
