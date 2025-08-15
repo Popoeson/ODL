@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Set Department</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #0d8549;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #0d8549;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    input, select , textarea{
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    
+    textarea { 
+      resize: vertical; 
+    }
+    
+    .course-row { 
+      display: grid; 
+      grid-template-columns: 2fr 1fr fr 1fr auto;
+       gap: 10px; margin-top: 10px;
+       align-items: center;
+        }
+        
+    .add-btn { 
+      background: #28a745; 
+      color: white; padding: 8px 12px;
+       border: none; margin-top: 10px; 
+       cursor: pointer;      
+       border-radius: 4px; 
+       }
+       
+    .add-btn:hover { 
+      background: #218838; 
+      }
+      
+    .delete-btn { 
+      background: #dc3545; color: white; 
+      border: none; padding: 6px 10px;
+      border-radius: 4px; cursor: pointer; 
+      }
+      
+    .delete-btn:hover { 
+      background: #c82333;
+       }
+
+    button {
+      background-color: #0d8549;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #096e3b;
+    }
+  </style>
+</head>
+<body>
+  <header>Set Department</header>
+
+  <div class="container">
+    <h2>Create Department</h2>
+    <form id="departmentForm">
+        
+        <label>Faculty</label>
+      <select name="faculty" required>
+        <option value="">Select Faculty</option>
+        <option value="Faculty of Arts & Social Sciences">Faculty of Arts & Social Sciences</option>
+        <option value="Faculty of Natural & Applied Sciences">Faculty of Natural & Applied Sciences</option>
+        <option value="Faculty of Health Science">Faculty of Health Science</option>
+               <option value="Faculty of Law">Law</option>
+      </select>
+      
+
+      <label for="department">Department Name</label>
+      <input type="text" id="department" name="department" placeholder="Enter department name" required>
+      
+      <label>Description</label>
+      <textarea name="description" rows="4" required></textarea>
+
+      <label>HOD Name</label>
+      <input type="text" name="hod" required>
+
+      <label>Email</label>
+      <input type="email" name="email" required>
+
+      <label>Phone Number</label>
+      <input type="tel" name="phone" required>
+
+      <label>Duration of Study (in months)</label>
+      <input type="text" name="duration" placeholder="e.g., 23 Months" required>
+
+      <label>Courses Offered</label>
+      <div id="coursesList"></div>
+      <button type="button" class="add-btn" onclick="addCourse()">+ Add Course</button>
+
+      <h3>Admission Requirements</h3>
+      <label>O’level Subjects</label>
+      <textarea name="olevelSubjects" rows="3" placeholder="List subjects separated by commas" required></textarea>
+
+      <label>JAMB Score</label>
+      <input type="number" name="jambScore" required>
+
+      <label>Correct JAMB Combination</label>
+      <textarea name="jambCombination" rows="2" placeholder="e.g., English, Mathematics, Physics" required></textarea>
+
+      <label>Extra O’level Requirements</label>
+      <textarea name="extraOlevel" rows="2"></textarea>
+
+      <label>Accreditation Status</label>
+      <select name="accreditation" required>
+        <option value="">Select Status</option>
+        <option value="Fully Accredited">Fully Accredited</option>
+        <option value="Provisionally Accredited">Provisionally Accredited</option>
+        <option value="Not Accredited">Not Accredited</option>
+      </select>
+
+      <button type="submit">Save Department</button>
+    </form>
+  </div>
+
+  <script>
+      
+      let courses = [];
+
+    function addCourse() {
+      const course = { name: '', year: '', semester: '', unit: '' };
+      courses.push(course);
+      displayCourses();
+    }
+
+    function updateCourse(index, field, value) {
+      courses[index][field] = value;
+    }
+
+    function deleteCourse(index) {
+      courses.splice(index, 1);
+      displayCourses();
+    }
+
+    function displayCourses() {
+      const coursesList = document.getElementById('coursesList');
+      coursesList.innerHTML = '';
+      courses.forEach((course, index) => {
+        const row = document.createElement('div');
+        row.className = 'course-row';
+        row.innerHTML = `
+          <input type="text" placeholder="Course Name" value="${course.name}" 
+            oninput="updateCourse(${index}, 'name', this.value)">
+          <select onchange="updateCourse(${index}, 'year', this.value)">
+            <option value="">Year</option>
+            <option value="Year 1" ${course.year==='Year 1'?'selected':''}>Year 1</option>
+            <option value="Year 2" ${course.year==='Year 2'?'selected':''}>Year 2</option>
+            <option value="Year 3" ${course.year==='Year 3'?'selected':''}>Year 3</option>
+            <option value="Year 4" ${course.year==='Year 4'?'selected':''}>Year 4</option>
+          </select>
+          <select onchange="updateCourse(${index}, 'semester', this.value)">
+            <option value="">Semester</option>
+            <option value="First Semester" ${course.semester==='First Semester'?'selected':''}>First Semester</option>
+            <option value="Second Semester" ${course.semester==='Second Semester'?'selected':''}>Second Semester</option>
+          </select>
+          <input type="number" placeholder="Units" value="${course.unit}" 
+            oninput="updateCourse(${index}, 'unit', this.value)">
+          <button type="button" class="delete-btn" onclick="deleteCourse(${index})">X</button>
+        `;
+        coursesList.appendChild(row);
+      });
+    }
+
+    document.getElementById('deptForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      formData.append('courses', JSON.stringify(courses));
+
+      const data = {};
+      formData.forEach((value, key) => data[key] = value);
+
+      console.log("Department Data:", data);
+      alert("Department info saved successfully! (Frontend only for now)");
+    });
+    
+
+  </script>
+</body>
+</html>
