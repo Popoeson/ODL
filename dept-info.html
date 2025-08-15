@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Department Information</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    header {
+      background: linear-gradient(90deg, #004d40, #00796b);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      color: #004d40;
+      margin-bottom: 0.5rem;
+    }
+
+    .section {
+      margin-bottom: 1.5rem;
+    }
+
+    .section h3 {
+      color: #00796b;
+      border-bottom: 2px solid #e0e0e0;
+      padding-bottom: 0.3rem;
+      margin-bottom: 0.8rem;
+    }
+
+    ul {
+      padding-left: 1.2rem;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .status.accredited {
+      background-color: #2e7d32;
+    }
+
+    .status.not-accredited {
+      background-color: #c62828;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Department Information</h1>
+  </header>
+
+  <div class="container">
+    <!-- Department Details -->
+    <div class="section" id="dept-details">
+      <h2 id="dept-name">Loading...</h2>
+      <p id="dept-desc"></p>
+    </div>
+
+    <!-- Accreditation Status -->
+    <div class="section" id="accreditation-section">
+      <h3>Accreditation Status</h3>
+      <span id="accreditation-status" class="status">Loading...</span>
+    </div>
+
+    <!-- Admission Requirements -->
+    <div class="section" id="admission-reqs">
+      <h3>Admission Requirements</h3>
+
+      <p><strong>O'level Requirements:</strong></p>
+      <ul id="olevel-reqs"></ul>
+
+      <p><strong>Required JAMB Score:</strong> <span id="jamb-score"></span></p>
+      <p><strong>Correct JAMB Combination:</strong></p>
+      <ul id="jamb-combo"></ul>
+    </div>
+  </div>
+
+  <script>
+    // Temporary example data (replace with backend fetch later)
+    const departmentData = {
+      name: "Computer Science",
+      description:
+        "The Department of Computer Science provides training in software engineering, data science, and computer systems.",
+      accreditationStatus: "Accredited",
+      olevelRequirements: [
+        "English Language",
+        "Mathematics",
+        "Physics",
+        "Chemistry",
+        "Any other relevant science subject"
+      ],
+      jambScore: 180,
+      jambCombination: ["English", "Mathematics", "Physics", "Chemistry"]
+    };
+
+    function loadDepartmentInfo(data) {
+      document.getElementById("dept-name").textContent = data.name;
+      document.getElementById("dept-desc").textContent = data.description;
+
+      const statusEl = document.getElementById("accreditation-status");
+      statusEl.textContent = data.accreditationStatus;
+      statusEl.className =
+        "status " +
+        (data.accreditationStatus.toLowerCase() === "accredited"
+          ? "accredited"
+          : "not-accredited");
+
+      const olevelList = document.getElementById("olevel-reqs");
+      olevelList.innerHTML = "";
+      data.olevelRequirements.forEach((req) => {
+        const li = document.createElement("li");
+        li.textContent = req;
+        olevelList.appendChild(li);
+      });
+
+      document.getElementById("jamb-score").textContent = data.jambScore;
+
+      const jambComboList = document.getElementById("jamb-combo");
+      jambComboList.innerHTML = "";
+      data.jambCombination.forEach((subject) => {
+        const li = document.createElement("li");
+        li.textContent = subject;
+        jambComboList.appendChild(li);
+      });
+    }
+
+    // Simulate loading from backend
+    document.addEventListener("DOMContentLoaded", () => {
+      loadDepartmentInfo(departmentData);
+    });
+  </script>
+</body>
+</html>
