@@ -94,6 +94,8 @@ header p {
       <h2>Faculty of Arts & Social Sciences</h2>
       <p>Delivering quality teaching and research in arts, humanities, and social sciences.</p>
       <a href="department.html" class="btn">View Departments</a>
+      
+  <button class="btn" onclick="setFaculty('Faculty of Arts & Social Sciences')">View Departments</button>
     </div>
 
     <div class="faculty-card">
@@ -101,6 +103,8 @@ header p {
       <h2>Faculty of Natural & Applied Sciences</h2>
       <p>Focused on education and research in fundamental and applied sciences.</p>
       <a href="department.html" class="btn">View Departments</a>
+      
+  <button class="btn" onclick="setFaculty('Faculty of Natural & Applied Sciences')">View Departments</button>
     </div>
 
     <div class="faculty-card">
@@ -108,6 +112,8 @@ header p {
       <h2>Faculty of Health Sciences</h2>
       <p>Training professionals in health disciplines with practical and theoretical knowledge.</p>
       <a href="department.html" class="btn">View Departments</a>
+      
+  <button class="btn" onclick="setFaculty('Faculty of Health Sciences')">View Departments</button>
     </div>
 
     <div class="faculty-card">
@@ -115,8 +121,18 @@ header p {
       <h2>Faculty of Law</h2>
       <p>Committed to producing highly competent legal practitioners with strong ethics.</p>
       <a href="department.html" class="btn">View Departments</a>
+      
+  <button class="btn" onclick="setFaculty('Faculty of Law')">View Departments</button>
     </div>
   </section>
+  
+
+<script>
+    function setFaculty(facultyName) {
+        localStorage.setItem("selectedFaculty", facultyName);
+        window.location.href = "dept.html";
+    }
+</script>
 
 </body>
 </html>
