@@ -102,62 +102,61 @@
     </p>
 
     <script>
-        const backendUrl = "https://odl-450c.onrender.com/api/departments";
+    const backendUrl = "https://odl-450c.onrender.com/api/departments";
 
-        // Get faculty name from URL query params
-        const params = new URLSearchParams(window.location.search);
-        const facultyName = params.get("faculty");
+    // Get faculty name from localStorage instead of URL
+    const facultyName = localStorage.getItem("selectedFaculty");
 
-        const facultyTitleEl = document.getElementById("faculty-title");
-        const facultyDescEl = document.getElementById("faculty-description");
-        const deptListEl = document.getElementById("dept-list");
-        const noDeptEl = document.getElementById("no-dept");
+    const facultyTitleEl = document.getElementById("faculty-title");
+    const facultyDescEl = document.getElementById("faculty-description");
+    const deptListEl = document.getElementById("dept-list");
+    const noDeptEl = document.getElementById("no-dept");
 
-        if (!facultyName) {
-            facultyTitleEl.textContent = "Faculty not specified";
-            facultyDescEl.textContent = "Please go back and select a faculty.";
-        } else {
-            facultyTitleEl.textContent = `Departments in ${facultyName}`;
-            
-            // Faculty-specific placeholder descriptions (optional)
-            const facultyDescriptions = {
-                "Faculty of Arts & Social Sciences": "The Allied Health Professions program emphasizes hands-on training...",
-                "Faculty of Natural & Applied Sciences": "Our engineering faculty combines theory with practical experience...",
-                "Faculty of Health Sciences": "The Business faculty prepares leaders for global commerce...",
-                "Faculty of Law": "The Business faculty prepares leaders for global commerce..."
-            };
-            facultyDescEl.textContent = facultyDescriptions[facultyName] || "Explore our departments and programs.";
+    if (!facultyName) {
+        facultyTitleEl.textContent = "Faculty not specified";
+        facultyDescEl.textContent = "Please go back and select a faculty.";
+    } else {
+        facultyTitleEl.textContent = `Departments in ${facultyName}`;
+        
+        // Faculty-specific placeholder descriptions (optional)
+        const facultyDescriptions = {
+            "Faculty of Arts & Social Sciences": "The Allied Health Professions program emphasizes hands-on training...",
+            "Faculty of Natural & Applied Sciences": "Our engineering faculty combines theory with practical experience...",
+            "Faculty of Health Sciences": "The Business faculty prepares leaders for global commerce...",
+            "Faculty of Law": "The Business faculty prepares leaders for global commerce..."
+        };
+        facultyDescEl.textContent = facultyDescriptions[facultyName] || "Explore our departments and programs.";
 
-            // Fetch departments for this faculty
-            fetch(`${backendUrl}?faculty=${encodeURIComponent(facultyName)}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.length) {
-                        noDeptEl.style.display = "block";
-                        return;
-                    }
-                    data.forEach(dept => {
-                        const card = document.createElement("div");
-                        card.className = "dept-card";
-                        card.innerHTML = `
-                            <img src="https://img.icons8.com/color/48/dna-helix.png" alt="icon">
-                            <h2>${dept.department}</h2>
-                            <p>${dept.description || "No description available."}</p>
-                            <button class="view-btn" onclick="viewDept('${dept._id}')">View Details</button>
-                        `;
-                        deptListEl.appendChild(card);
-                    });
-                })
-                .catch(err => {
-                    console.error("Error loading departments:", err);
+        // Fetch departments for this faculty
+        fetch(`${backendUrl}?faculty=${encodeURIComponent(facultyName)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (!data.length) {
                     noDeptEl.style.display = "block";
-                    noDeptEl.textContent = "Error loading departments.";
+                    return;
+                }
+                data.forEach(dept => {
+                    const card = document.createElement("div");
+                    card.className = "dept-card";
+                    card.innerHTML = `
+                        <img src="https://img.icons8.com/color/48/dna-helix.png" alt="icon">
+                        <h2>${dept.department}</h2>
+                        <p>${dept.description || "No description available."}</p>
+                        <button class="view-btn" onclick="viewDept('${dept._id}')">View Details</button>
+                    `;
+                    deptListEl.appendChild(card);
                 });
-        }
+            })
+            .catch(err => {
+                console.error("Error loading departments:", err);
+                noDeptEl.style.display = "block";
+                noDeptEl.textContent = "Error loading departments.";
+            });
+    }
 
-        function viewDept(id) {
-            window.location.href = `dept-details.html?id=${id}`;
-        }
+    function viewDept(id) {
+        window.location.href = `dept-details.html?id=${id}`;
+    }
     </script>
 
 </body>
