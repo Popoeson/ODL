@@ -139,16 +139,37 @@
 const reqList = document.getElementById("requirements");
 reqList.innerHTML = "";
 
-if (Array.isArray(dept.admissionRequirements)) {
-  dept.admissionRequirements.forEach(req => {
+if (dept.admissionRequirements && typeof dept.admissionRequirements === "object") {
+  const req = dept.admissionRequirements;
+
+  // O-level subjects
+  if (Array.isArray(req.olevelSubjects) && req.olevelSubjects.length > 0) {
     const li = document.createElement("li");
-    li.textContent = req;
+    li.textContent = `O'Level Subjects: ${req.olevelSubjects.join(", ")}`;
     reqList.appendChild(li);
-  });
-} else if (typeof dept.admissionRequirements === "string" && dept.admissionRequirements.trim() !== "") {
-  const li = document.createElement("li");
-  li.textContent = dept.admissionRequirements;
-  reqList.appendChild(li);
+  }
+
+  // JAMB Score
+  if (req.jambScore) {
+    const li = document.createElement("li");
+    li.textContent = `Minimum JAMB Score: ${req.jambScore}`;
+    reqList.appendChild(li);
+  }
+
+  // JAMB Combination
+  if (Array.isArray(req.jambCombination) && req.jambCombination.length > 0) {
+    const li = document.createElement("li");
+    li.textContent = `JAMB Combination: ${req.jambCombination.join(", ")}`;
+    reqList.appendChild(li);
+  }
+
+  // Extra O'Level
+  if (req.extraOlevel) {
+    const li = document.createElement("li");
+    li.textContent = `Extra O'Level Requirement: ${req.extraOlevel}`;
+    reqList.appendChild(li);
+  }
+
 } else {
   const li = document.createElement("li");
   li.textContent = "No requirements listed.";
