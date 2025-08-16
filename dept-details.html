@@ -7,149 +7,175 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f8f9fa;
       margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 900px;
-      margin: 2rem auto;
-      background: #fff;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    h1 {
-      margin-bottom: .5rem;
+      background: #f4f6f9;
       color: #333;
     }
+
+    header {
+      background: #28a745;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
     h2 {
-      margin-top: 2rem;
-      color: #444;
-      border-bottom: 2px solid #eee;
-      padding-bottom: .3rem;
+      margin-top: 0;
+      color: #0d47a1;
     }
-    p, li {
-      color: #555;
-      line-height: 1.6;
+
+    section {
+      margin-bottom: 2rem;
     }
-    .courses-table {
+
+    .info p {
+      margin: 6px 0;
+    }
+
+    table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 1rem;
     }
-    .courses-table th, .courses-table td {
-      border: 1px solid #ddd;
-      padding: 8px;
+
+    table, th, td {
+      border: 1px solid #ccc;
     }
-    .courses-table th {
-      background: #f1f1f1;
+
+    th, td {
+      padding: 8px;
       text-align: left;
     }
-    .enroll-btn {
-      display: inline-block;
-      margin-top: 2rem;
-      padding: .75rem 1.5rem;
-      background: #28a745;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1rem;
+
+    th {
+      background: #f1f1f1;
     }
-    .enroll-btn:hover {
-      background: #218838;
+
+    .btn-enroll {
+      display: block;
+      text-align: center;
+      background: #0d47a1;
+      color: #fff;
+      padding: 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 2rem;
+    }
+
+    .btn-enroll:hover {
+      background: #1565c0;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1 id="dept-name">Department Name</h1>
-    <p><strong>Faculty:</strong> <span id="dept-faculty"></span></p>
-    <p><strong>Head of Department:</strong> <span id="dept-hod"></span></p>
-    <p><strong>Email:</strong> <span id="dept-email"></span></p>
-    <p><strong>Phone:</strong> <span id="dept-phone"></span></p>
-    <p><strong>Duration:</strong> <span id="dept-duration"></span></p>
-    <p><strong>Accreditation:</strong> <span id="dept-accreditation"></span></p>
+  <header>
+    <h1 id="deptName">Department</h1>
+  </header>
 
-    <h2>Description</h2>
-    <p id="dept-description"></p>
+  <main>
+    <section class="info">
+      <h2>Overview</h2>
+      <p><strong>Faculty:</strong> <span id="faculty"></span></p>
+      <p><strong>Head of Department:</strong> <span id="hod"></span></p>
+      <p><strong>Duration:</strong> <span id="duration"></span></p>
+      <p><strong>Contact:</strong> <span id="contact"></span></p>
+      <p id="description"></p>
+    </section>
 
-    <h2>Admission Requirements</h2>
-    <p><strong>O'Level Subjects:</strong> <span id="olevel"></span></p>
-    <p><strong>JAMB Score:</strong> <span id="jamb-score"></span></p>
-    <p><strong>JAMB Combination:</strong> <span id="jamb-combination"></span></p>
-    <p><strong>Extra O'Level Requirement:</strong> <span id="extra-olevel"></span></p>
+    <section>
+      <h2>Admission Requirements</h2>
+      <ul id="requirements"></ul>
+    </section>
 
-    <h2>Courses</h2>
-    <table class="courses-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Year</th>
-          <th>Semester</th>
-          <th>Unit</th>
-        </tr>
-      </thead>
-      <tbody id="courses-list"></tbody>
-    </table>
+    <section>
+      <h2>Courses</h2>
+      <div id="courses"></div>
+    </section>
 
-    <button class="enroll-btn" id="enroll-btn">Enroll</button>
-  </div>
+    <section>
+      <h2>Accreditation</h2>
+      <p id="accreditation"></p>
+    </section>
+
+    <a href="enroll.html" class="btn-enroll">Enroll Now</a>
+  </main>
 
   <script>
-    const backendUrl = "https://odl-450c.onrender.com/api/departments"; // change this
+    const backendURL = "https://odl-450c.onrender.com/api/departments"; // replace with your real backend
 
-    document.addEventListener("DOMContentLoaded", async () => {
-      const deptId = localStorage.getItem("selectedDeptId"); // set from dept.html
+    async function loadDepartmentDetails() {
+      const deptId = localStorage.getItem("selectedDepartmentId");
       if (!deptId) {
-        alert("No department selected!");
-        window.location.href = "dept.html";
+        document.querySelector("main").innerHTML = "<p>No department selected. Go back to the department list.</p>";
         return;
       }
 
       try {
-        const res = await fetch(`${backendUrl}/${deptId}`);
+        const res = await fetch(`${backendURL}/${deptId}`);
         const dept = await res.json();
 
-        // Fill page
-        document.getElementById("dept-name").textContent = dept.department;
-        document.getElementById("dept-faculty").textContent = dept.faculty;
-        document.getElementById("dept-hod").textContent = dept.hod;
-        document.getElementById("dept-email").textContent = dept.email;
-        document.getElementById("dept-phone").textContent = dept.phone;
-        document.getElementById("dept-duration").textContent = dept.duration;
-        document.getElementById("dept-accreditation").textContent = dept.accreditation;
-        document.getElementById("dept-description").textContent = dept.description;
+        // Basic info
+        document.getElementById("deptName").textContent = dept.name || "";
+        document.getElementById("faculty").textContent = dept.faculty || "";
+        document.getElementById("hod").textContent = dept.hod || "";
+        document.getElementById("duration").textContent = dept.duration || "";
+        document.getElementById("contact").textContent = `${dept.email || ""} ${dept.phone || ""}`;
+        document.getElementById("description").textContent = dept.description || "";
 
-        document.getElementById("olevel").textContent = dept.admissionRequirements.olevelSubjects.join(", ");
-        document.getElementById("jamb-score").textContent = dept.admissionRequirements.jambScore;
-        document.getElementById("jamb-combination").textContent = dept.admissionRequirements.jambCombination.join(", ");
-        document.getElementById("extra-olevel").textContent = dept.admissionRequirements.extraOlevel;
-
-        const coursesList = document.getElementById("courses-list");
-        dept.courses.forEach(course => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${course.name}</td>
-            <td>${course.year}</td>
-            <td>${course.semester}</td>
-            <td>${course.unit}</td>
-          `;
-          coursesList.appendChild(row);
+        // Requirements
+        const reqList = document.getElementById("requirements");
+        reqList.innerHTML = "";
+        (dept.admissionRequirements || []).forEach(req => {
+          const li = document.createElement("li");
+          li.textContent = req;
+          reqList.appendChild(li);
         });
 
-        // Handle enroll
-        document.getElementById("enroll-btn").addEventListener("click", () => {
-          localStorage.setItem("enrollingDeptId", dept._id);
-          localStorage.setItem("enrollingDeptName", dept.department);
-          window.location.href = "enroll.html";
-        });
+        // Courses (group by year/semester)
+        const coursesDiv = document.getElementById("courses");
+        coursesDiv.innerHTML = "";
+        if (dept.courses && dept.courses.length > 0) {
+          dept.courses.forEach(group => {
+            const h3 = document.createElement("h3");
+            h3.textContent = `${group.year} - ${group.semester}`;
+            coursesDiv.appendChild(h3);
 
+            const table = document.createElement("table");
+            const thead = document.createElement("thead");
+            thead.innerHTML = "<tr><th>Course Code</th><th>Course Title</th><th>Units</th></tr>";
+            table.appendChild(thead);
+
+            const tbody = document.createElement("tbody");
+            (group.courses || []).forEach(c => {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `<td>${c.code}</td><td>${c.title}</td><td>${c.units}</td>`;
+              tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+
+            coursesDiv.appendChild(table);
+          });
+        }
+
+        // Accreditation
+        document.getElementById("accreditation").textContent = dept.accreditation || "";
       } catch (err) {
-        console.error("Error loading department:", err);
+        console.error(err);
+        document.querySelector("main").innerHTML = "<p>Failed to load department details. Please try again later.</p>";
       }
-    });
+    }
+
+    loadDepartmentDetails();
   </script>
 </body>
-</html>
+      </html>
