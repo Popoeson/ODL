@@ -173,8 +173,8 @@
       document.querySelectorAll(".view-btn").forEach(btn => {
         btn.addEventListener("click", (e) => {
           const deptId = e.target.getAttribute("data-id");
-          localStorage.setItem("selectedDeptId", deptId); // ✅ Save selected department
-          window.location.href = "dept-details.html";
+          // ✅ Pass deptId via query string instead of localStorage
+          window.location.href = `dept-details.html?id=${deptId}`;
         });
       });
 
@@ -202,7 +202,6 @@
     await loadDepartments(); // show all departments initially
   });
   </script>
-  
 
 </body>
 </html>
