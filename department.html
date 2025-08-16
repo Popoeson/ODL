@@ -100,7 +100,8 @@
   <p class="no-dept" id="no-dept" style="display:none;">
     No departments have been added under this faculty yet.
   </p>
-<script>
+
+  <script>
   const backendUrl = "https://odl-450c.onrender.com/api/departments";
 
   const facultyTitleEl = document.getElementById("faculty-title");
@@ -161,13 +162,22 @@
         const card = document.createElement("div");
         card.className = "dept-card";
         card.innerHTML = `
-         
           <h2>${dept.department}</h2>
           <p>${dept.description || "No description available."}</p>
-          <button class="view-btn" onclick="viewDept('${dept._id}')">View Details</button>
+          <button class="view-btn" data-id="${dept._id}">View Details</button>
         `;
         deptListEl.appendChild(card);
       });
+
+      // Attach event listeners to all "View Details" buttons
+      document.querySelectorAll(".view-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const deptId = e.target.getAttribute("data-id");
+          localStorage.setItem("selectedDeptId", deptId); // ✅ Save selected department
+          window.location.href = "dept-details.html";
+        });
+      });
+
     } catch (err) {
       console.error("Error loading departments:", err);
       noDeptEl.style.display = "block";
@@ -186,16 +196,13 @@
     }
   });
 
-  function viewDept(id) {
-    localStorage.setItem("selectedDeptId", id);
-    window.location.href = "dept-details.html";
-  }
-
   // --- INITIAL LOAD ---
   document.addEventListener("DOMContentLoaded", async () => {
     await loadFaculties();
     await loadDepartments(); // show all departments initially
   });
-</script>
+  </script>
+  
+
 </body>
 </html>
