@@ -100,11 +100,10 @@
     <p class="no-dept" id="no-dept" style="display:none;">
         No departments have been added under this faculty yet.
     </p>
+<script>
+    const backendUrl = "https://odl-450c.onrender.com/api/departments/faculty";
 
-    <script>
-    const backendUrl = "https://odl-450c.onrender.com/api/departments";
-
-    // Get faculty name from localStorage instead of URL
+    // Get faculty name from localStorage
     const facultyName = localStorage.getItem("selectedFaculty");
 
     const facultyTitleEl = document.getElementById("faculty-title");
@@ -118,7 +117,7 @@
     } else {
         facultyTitleEl.textContent = `Departments in ${facultyName}`;
         
-        // Faculty-specific placeholder descriptions (optional)
+        // Optional: Faculty descriptions
         const facultyDescriptions = {
             "Faculty of Arts & Social Sciences": "The Allied Health Professions program emphasizes hands-on training...",
             "Faculty of Natural & Applied Sciences": "Our engineering faculty combines theory with practical experience...",
@@ -127,8 +126,8 @@
         };
         facultyDescEl.textContent = facultyDescriptions[facultyName] || "Explore our departments and programs.";
 
-        // Fetch departments for this faculty
-        fetch(`${backendUrl}?faculty=${encodeURIComponent(facultyName)}`)
+        // Fetch departments using new filtering route
+        fetch(`${backendUrl}/${encodeURIComponent(facultyName)}`)
             .then(res => res.json())
             .then(data => {
                 if (!data.length) {
@@ -155,9 +154,10 @@
     }
 
     function viewDept(id) {
-        window.location.href = `dept-details.html?id=${id}`;
+        localStorage.setItem("selectedDeptId", id);
+        window.location.href = "dept-details.html";
     }
-    </script>
+</script>
 
 </body>
 </html>
