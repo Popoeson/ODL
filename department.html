@@ -1,167 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Departments</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f9f9f9;
-        }
-
-        .faculty-header {
-            background-color: #1e8449;
-            color: white;
-            text-align: center;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px;
-        }
-
-        .faculty-header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-        }
-
-        .faculty-header img {
-            width: 40px;
-            vertical-align: middle;
-            margin-right: 10px;
-        }
-
-        .faculty-description {
-            text-align: center;
-            padding: 0 15px;
-            font-size: 1rem;
-            color: #555;
-        }
-
-        .dept-card {
-            background: white;
-            border-radius: 12px;
-            margin: 15px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .dept-card img {
-            width: 40px;
-            margin-bottom: 10px;
-        }
-
-        .dept-card h2 {
-            color: #1e8449;
-            margin-bottom: 8px;
-        }
-
-        .dept-card p {
-            color: #555;
-            font-size: 0.95rem;
-            margin-bottom: 15px;
-        }
-
-        .view-btn {
-            background: #1e8449;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .view-btn:hover {
-            background: #145a32;
-        }
-
-        .no-dept {
-            text-align: center;
-            color: #777;
-            margin-top: 20px;
-            font-size: 1rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Departments</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+    .faculty-header {
+      background-color: #1e8449;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 15px;
+    }
+    .faculty-header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    .faculty-header img {
+      width: 40px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    .faculty-description {
+      text-align: center;
+      padding: 0 15px;
+      font-size: 1rem;
+      color: #555;
+    }
+    .faculty-select {
+      display: block;
+      margin: 15px auto;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    .dept-card {
+      background: white;
+      border-radius: 12px;
+      margin: 15px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+    }
+    .dept-card img {
+      width: 40px;
+      margin-bottom: 10px;
+    }
+    .dept-card h2 {
+      color: #1e8449;
+      margin-bottom: 8px;
+    }
+    .dept-card p {
+      color: #555;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+    }
+    .view-btn {
+      background: #1e8449;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .view-btn:hover {
+      background: #145a32;
+    }
+    .no-dept {
+      text-align: center;
+      color: #777;
+      margin-top: 20px;
+      font-size: 1rem;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="faculty-header">
-        <img src="https://img.icons8.com/ios-filled/50/ffffff/books.png" alt="books">
-        <h1 id="faculty-title">Departments</h1>
-    </div>
-    <p class="faculty-description" id="faculty-description">
-        Loading faculty description...
-    </p>
+  <div class="faculty-header">
+    <img src="https://img.icons8.com/ios-filled/50/ffffff/books.png" alt="books">
+    <h1 id="faculty-title">Departments</h1>
+  </div>
 
-    <div id="dept-list"></div>
+  <select id="faculty-select" class="faculty-select"></select>
 
-    <p class="no-dept" id="no-dept" style="display:none;">
-        No departments have been added under this faculty yet.
-    </p>
+  <p class="faculty-description" id="faculty-description">
+    Select a faculty to view its departments.
+  </p>
+
+  <div id="dept-list"></div>
+
+  <p class="no-dept" id="no-dept" style="display:none;">
+    No departments have been added under this faculty yet.
+  </p>
 <script>
-    const backendUrl = "https://odl-450c.onrender.com/api/departments";
+  const backendUrl = "https://odl-450c.onrender.com/api/departments";
 
-    // Get faculty name from localStorage
-    const facultyName = localStorage.getItem("selectedFaculty");
+  const facultyTitleEl = document.getElementById("faculty-title");
+  const facultyDescEl = document.getElementById("faculty-description");
+  const deptListEl = document.getElementById("dept-list");
+  const noDeptEl = document.getElementById("no-dept");
+  const facultySelect = document.getElementById("faculty-select");
 
-    const facultyTitleEl = document.getElementById("faculty-title");
-    const facultyDescEl = document.getElementById("faculty-description");
-    const deptListEl = document.getElementById("dept-list");
-    const noDeptEl = document.getElementById("no-dept");
+  // Load unique faculties dynamically
+  async function loadFaculties() {
+    try {
+      const res = await fetch(backendUrl);
+      const departments = await res.json();
 
-    if (!facultyName) {
-        facultyTitleEl.textContent = "Faculty not specified";
-        facultyDescEl.textContent = "Please go back and select a faculty.";
+      const faculties = [...new Set(departments.map(d => d.faculty))]; // unique faculties
+      facultySelect.innerHTML = `<option value="">-- Select Faculty --</option>`;
+      faculties.forEach(fac => {
+        const option = document.createElement("option");
+        option.value = fac;
+        option.textContent = fac;
+        facultySelect.appendChild(option);
+      });
+
+      // Restore last selected faculty
+      const savedFaculty = localStorage.getItem("selectedFaculty");
+      if (savedFaculty && faculties.includes(savedFaculty)) {
+        facultySelect.value = savedFaculty;
+        loadDepartments(savedFaculty);
+      }
+    } catch (err) {
+      console.error("Error loading faculties:", err);
+    }
+  }
+
+  // Load departments (optionally filtered by faculty)
+  async function loadDepartments(faculty = null) {
+    facultyTitleEl.textContent = faculty ? `Departments in ${faculty}` : "All Departments";
+    facultyDescEl.textContent = faculty 
+      ? "Explore our departments and programs." 
+      : "Browse all available departments.";
+    deptListEl.innerHTML = "";
+    noDeptEl.style.display = "none";
+
+    try {
+      let url = backendUrl;
+      if (faculty) {
+        url += `?faculty=${encodeURIComponent(faculty)}`;
+      }
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (!data.length) {
+        noDeptEl.style.display = "block";
+        return;
+      }
+
+      data.forEach(dept => {
+        const card = document.createElement("div");
+        card.className = "dept-card";
+        card.innerHTML = `
+          <img src="https://img.icons8.com/color/48/dna-helix.png" alt="icon">
+          <h2>${dept.department}</h2>
+          <p>${dept.description || "No description available."}</p>
+          <button class="view-btn" onclick="viewDept('${dept._id}')">View Details</button>
+        `;
+        deptListEl.appendChild(card);
+      });
+    } catch (err) {
+      console.error("Error loading departments:", err);
+      noDeptEl.style.display = "block";
+      noDeptEl.textContent = "Error loading departments.";
+    }
+  }
+
+  // Handle faculty selection
+  facultySelect.addEventListener("change", (e) => {
+    const faculty = e.target.value;
+    if (faculty) {
+      localStorage.setItem("selectedFaculty", faculty);
+      loadDepartments(faculty);
     } else {
-        facultyTitleEl.textContent = `Departments in ${facultyName}`;
-        
-        // Optional: Faculty descriptions
-        const facultyDescriptions = {
-            "Faculty of Arts & Social Sciences": "The Allied Health Professions program emphasizes hands-on training...",
-            "Faculty of Natural & Applied Sciences": "Our engineering faculty combines theory with practical experience...",
-            "Faculty of Health Sciences": "The Business faculty prepares leaders for global commerce...",
-            "Faculty of Law": "The Business faculty prepares leaders for global commerce..."
-        };
-        facultyDescEl.textContent = facultyDescriptions[facultyName] || "Explore our departments and programs.";
-
-        // ✅ Fetch departments using query param filter
-        fetch(`${backendUrl}?faculty=${encodeURIComponent(facultyName)}`)
-            .then(res => {
-                if (!res.ok) throw new Error("Network response was not ok");
-                return res.json();
-            })
-            .then(data => {
-                if (!data.length) {
-                    noDeptEl.style.display = "block";
-                    return;
-                }
-                deptListEl.innerHTML = ""; // Clear any old content
-                data.forEach(dept => {
-                    const card = document.createElement("div");
-                    card.className = "dept-card";
-                    card.innerHTML = `
-                        <img src="https://img.icons8.com/color/48/dna-helix.png" alt="icon">
-                        <h2>${dept.department}</h2>
-                        <p>${dept.description || "No description available."}</p>
-                        <button class="view-btn" onclick="viewDept('${dept._id}')">View Details</button>
-                    `;
-                    deptListEl.appendChild(card);
-                });
-            })
-            .catch(err => {
-                console.error("Error loading departments:", err);
-                noDeptEl.style.display = "block";
-                noDeptEl.textContent = "Error loading departments.";
-            });
+      loadDepartments(); // show all if none selected
     }
+  });
 
-    function viewDept(id) {
-        localStorage.setItem("selectedDeptId", id);
-        window.location.href = "dept-details.html";
-    }
+  function viewDept(id) {
+    localStorage.setItem("selectedDeptId", id);
+    window.location.href = "dept-details.html";
+  }
+
+  // --- INITIAL LOAD ---
+  document.addEventListener("DOMContentLoaded", async () => {
+    await loadFaculties();
+    await loadDepartments(); // show all departments initially
+  });
 </script>
-
 </body>
 </html>
