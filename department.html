@@ -101,7 +101,7 @@
         No departments have been added under this faculty yet.
     </p>
 <script>
-    const backendUrl = "https://odl-450c.onrender.com/api/departments/faculty";
+    const backendUrl = "https://odl-450c.onrender.com/api/departments";
 
     // Get faculty name from localStorage
     const facultyName = localStorage.getItem("selectedFaculty");
@@ -126,14 +126,18 @@
         };
         facultyDescEl.textContent = facultyDescriptions[facultyName] || "Explore our departments and programs.";
 
-        // Fetch departments using new filtering route
-        fetch(`${backendUrl}/${encodeURIComponent(facultyName)}`)
-            .then(res => res.json())
+        // ✅ Fetch departments using query param filter
+        fetch(`${backendUrl}?faculty=${encodeURIComponent(facultyName)}`)
+            .then(res => {
+                if (!res.ok) throw new Error("Network response was not ok");
+                return res.json();
+            })
             .then(data => {
                 if (!data.length) {
                     noDeptEl.style.display = "block";
                     return;
                 }
+                deptListEl.innerHTML = ""; // Clear any old content
                 data.forEach(dept => {
                     const card = document.createElement("div");
                     card.className = "dept-card";
