@@ -91,7 +91,11 @@
       <p><strong>Contact:</strong> <span id="contact"></span></p>
       <p id="description"></p>
     </section>
-
+<div class="contact-section">
+  <h3>Contact Information</h3>
+  <p><strong>Email:</strong> <span id="email"></span></p>
+  <p><strong>Phone:</strong> <span id="phone"></span></p>
+</div>
     <section>
       <h2>Admission Requirements</h2>
       <ul id="requirements"></ul>
@@ -132,7 +136,8 @@
       document.getElementById("faculty").textContent = dept.faculty || "";
       document.getElementById("hod").textContent = dept.hod || "";
       document.getElementById("duration").textContent = dept.duration || "";
-      document.getElementById("contact").textContent = `${dept.email || ""} ${dept.phone || ""}`;
+      document.getElementById("email").textContent = `${dept.email || ""};
+      document.getElementById("phone").textContent = `${dept.phone || ""}`;
       document.getElementById("description").textContent = dept.description || "";
 
       // Requirements
