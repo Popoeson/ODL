@@ -70,18 +70,28 @@ app.post('/api/departments', async (req, res) => {
     }
 });
 
-// --- Get departments (optionally filtered by faculty) ---
-app.get('/api/departments', async (req, res) => {
-    try {
-        const { faculty } = req.query; // e.g. /api/departments?faculty=Engineering
-
-        const query = faculty ? { faculty } : {};
-        const departments = await Department.find(query);
-        res.json(departments);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+// Get distinct faculties
+app.get('/api/faculties', async (req, res) => {
+  try {
+    const faculties = await Department.distinct("faculty");
+    res.json(faculties);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
+
+// Get departments by faculty (optional filter)
+app.get('/api/departments', async (req, res) => {
+  try {
+    const { faculty } = req.query;
+    const query = faculty ? { faculty } : {};
+    const departments = await Department.find(query);
+    res.json(departments);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // --- Update a department ---
 app.put('/api/departments/:id', async (req, res) => {
     try {
