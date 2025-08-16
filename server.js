@@ -70,26 +70,12 @@ app.post('/api/departments', async (req, res) => {
     }
 });
 
-// --- Get all departments ---
-app.get('/api/departments', async (req, res) => {
-    try {
-        const departments = await Department.find();
-        res.json(departments);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
 // --- Get departments (optionally filtered by faculty) ---
 app.get('/api/departments', async (req, res) => {
     try {
-        const { faculty } = req.query; // e.g. /api/departments?faculty=Allied%20Health%20Sciences
+        const { faculty } = req.query; // e.g. /api/departments?faculty=Engineering
 
-        let query = {};
-        if (faculty) {
-            query.faculty = faculty;
-        }
-
+        const query = faculty ? { faculty } : {};
         const departments = await Department.find(query);
         res.json(departments);
     } catch (err) {
