@@ -111,71 +111,74 @@
   </main>
 
   <script>
-    const backendURL = "https://odl-450c.onrender.com/api/departments"; // replace with your real backend
+  const backendURL = "https://odl-450c.onrender.com/api/departments"; // replace with your real backend
 
-    async function loadDepartmentDetails() {
-    const deptId = localStorage.getItem("selectedDeptId");
-      if (!deptId) {
-        document.querySelector("main").innerHTML = "<p>No department selected. Go back to the department list.</p>";
-        return;
-      }
+  async function loadDepartmentDetails() {
+    // ✅ Get deptId from query string instead of localStorage
+    const params = new URLSearchParams(window.location.search);
+    const deptId = params.get("id");
 
-      try {
-        const res = await fetch(`${backendURL}/${deptId}`);
-        const dept = await res.json();
-
-        // Basic info
-        document.getElementById("deptName").textContent = dept.name || "";
-        document.getElementById("faculty").textContent = dept.faculty || "";
-        document.getElementById("hod").textContent = dept.hod || "";
-        document.getElementById("duration").textContent = dept.duration || "";
-        document.getElementById("contact").textContent = `${dept.email || ""} ${dept.phone || ""}`;
-        document.getElementById("description").textContent = dept.description || "";
-
-        // Requirements
-        const reqList = document.getElementById("requirements");
-        reqList.innerHTML = "";
-        (dept.admissionRequirements || []).forEach(req => {
-          const li = document.createElement("li");
-          li.textContent = req;
-          reqList.appendChild(li);
-        });
-
-        // Courses (group by year/semester)
-        const coursesDiv = document.getElementById("courses");
-        coursesDiv.innerHTML = "";
-        if (dept.courses && dept.courses.length > 0) {
-          dept.courses.forEach(group => {
-            const h3 = document.createElement("h3");
-            h3.textContent = `${group.year} - ${group.semester}`;
-            coursesDiv.appendChild(h3);
-
-            const table = document.createElement("table");
-            const thead = document.createElement("thead");
-            thead.innerHTML = "<tr><th>Course Code</th><th>Course Title</th><th>Units</th></tr>";
-            table.appendChild(thead);
-
-            const tbody = document.createElement("tbody");
-            (group.courses || []).forEach(c => {
-              const tr = document.createElement("tr");
-              tr.innerHTML = `<td>${c.code}</td><td>${c.title}</td><td>${c.units}</td>`;
-              tbody.appendChild(tr);
-            });
-            table.appendChild(tbody);
-
-            coursesDiv.appendChild(table);
-          });
-        }
-
-        // Accreditation
-        document.getElementById("accreditation").textContent = dept.accreditation || "";
-      } catch (err) {
-        console.error(err);
-        document.querySelector("main").innerHTML = "<p>Failed to load department details. Please try again later.</p>";
-      }
+    if (!deptId) {
+      document.querySelector("main").innerHTML = "<p>No department selected. Go back to the department list.</p>";
+      return;
     }
 
-    loadDepartmentDetails();
+    try {
+      const res = await fetch(`${backendURL}/${deptId}`);
+      const dept = await res.json();
+
+      // Basic info
+      document.getElementById("deptName").textContent = dept.department || "";
+      document.getElementById("faculty").textContent = dept.faculty || "";
+      document.getElementById("hod").textContent = dept.hod || "";
+      document.getElementById("duration").textContent = dept.duration || "";
+      document.getElementById("contact").textContent = `${dept.email || ""} ${dept.phone || ""}`;
+      document.getElementById("description").textContent = dept.description || "";
+
+      // Requirements
+      const reqList = document.getElementById("requirements");
+      reqList.innerHTML = "";
+      (dept.admissionRequirements || []).forEach(req => {
+        const li = document.createElement("li");
+        li.textContent = req;
+        reqList.appendChild(li);
+      });
+
+      // Courses (group by year/semester)
+      const coursesDiv = document.getElementById("courses");
+      coursesDiv.innerHTML = "";
+      if (dept.courses && dept.courses.length > 0) {
+        dept.courses.forEach(group => {
+          const h3 = document.createElement("h3");
+          h3.textContent = `${group.year} - ${group.semester}`;
+          coursesDiv.appendChild(h3);
+
+          const table = document.createElement("table");
+          const thead = document.createElement("thead");
+          thead.innerHTML = "<tr><th>Course Code</th><th>Course Title</th><th>Units</th></tr>";
+          table.appendChild(thead);
+
+          const tbody = document.createElement("tbody");
+          (group.courses || []).forEach(c => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${c.code}</td><td>${c.title}</td><td>${c.units}</td>`;
+            tbody.appendChild(tr);
+          });
+          table.appendChild(tbody);
+
+          coursesDiv.appendChild(table);
+        });
+      }
+
+      // Accreditation
+      document.getElementById("accreditation").textContent = dept.accreditation || "";
+    } catch (err) {
+      console.error(err);
+      document.querySelector("main").innerHTML = "<p>Failed to load department details. Please try again later.</p>";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", loadDepartmentDetails);
   </script>
 </body>
       </html>
