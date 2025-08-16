@@ -136,13 +136,24 @@
       document.getElementById("description").textContent = dept.description || "";
 
       // Requirements
-      const reqList = document.getElementById("requirements");
-      reqList.innerHTML = "";
-      (dept.admissionRequirements || []).forEach(req => {
-        const li = document.createElement("li");
-        li.textContent = req;
-        reqList.appendChild(li);
-      });
+const reqList = document.getElementById("requirements");
+reqList.innerHTML = "";
+
+if (Array.isArray(dept.admissionRequirements)) {
+  dept.admissionRequirements.forEach(req => {
+    const li = document.createElement("li");
+    li.textContent = req;
+    reqList.appendChild(li);
+  });
+} else if (typeof dept.admissionRequirements === "string" && dept.admissionRequirements.trim() !== "") {
+  const li = document.createElement("li");
+  li.textContent = dept.admissionRequirements;
+  reqList.appendChild(li);
+} else {
+  const li = document.createElement("li");
+  li.textContent = "No requirements listed.";
+  reqList.appendChild(li);
+    }
 
       // Courses (group by year/semester)
       const coursesDiv = document.getElementById("courses");
