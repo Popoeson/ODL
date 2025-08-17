@@ -213,29 +213,6 @@ if (dept.admissionRequirements && typeof dept.admissionRequirements === "object"
         });
       }
 
-      // Populate Courses
-const coursesTableBody = document.getElementById("courses-table-body");
-coursesTableBody.innerHTML = ""; // clear old rows
-
-if (department.courses && department.courses.length > 0) {
-  department.courses.forEach(course => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${course.code}</td>
-      <td>${course.title}</td>
-      <td>${course.unit}</td>
-      <td>${course.level}</td>
-    `;
-    coursesTableBody.appendChild(row);
-  });
-} else {
-  coursesTableBody.innerHTML = `
-    <tr>
-      <td colspan="4" style="text-align:center;">No courses available</td>
-    </tr>
-  `;
-            }
-
       // Accreditation
       document.getElementById("accreditation").textContent = dept.accreditation || "";
     } catch (err) {
