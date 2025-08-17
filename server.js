@@ -93,13 +93,26 @@ app.get('/api/departments', async (req, res) => {
 });
 
 // Get single department by ID
-app.get('/api/departments/:id', async (req, res) => {
+// app.get('/api/departments/:id', async (req, res) => {
+//  try {
+ //   const dept = await Department.findById(req.params.id);
+  //  if (!dept) return res.status(404).json({ message: "Department not found" });
+  //  res.json(dept);
+  // } catch (err) {
+ //   res.status(500).json({ error: err.message });
+ // }
+// });
+
+// Example: GET /api/departments/:id
+app.get("/api/departments/:id", async (req, res) => {
   try {
-    const dept = await Department.findById(req.params.id);
-    if (!dept) return res.status(404).json({ message: "Department not found" });
-    res.json(dept);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const department = await Department.findById(req.params.id);
+    if (!department) {
+      return res.status(404).json({ message: "Department not found" });
+    }
+    res.json(department); // <-- should include department.courses
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
   }
 });
 
